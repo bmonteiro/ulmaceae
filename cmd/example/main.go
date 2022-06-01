@@ -1,16 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
-
-	"github.com/fterrag/go-docker-example/user"
-
-	"github.com/fatih/color"
+	"net/http"
 )
 
-func main() {
-	u := user.User{NameFirst: "John", NameLast: "Smith"}
+type tyHandler struct{}
 
-	greeting := color.GreenString("Hello %s!\n", u.GetFullName())
-	log.Printf(greeting)
+func (h tyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("at=request path=%s", r.URL.Path)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "ty!")
+}
+
+func main() {
+	err := http.ListenAndServe(":8080", tyHandler{})
+	log.Fatal(err)
 }
